@@ -7,7 +7,7 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)]()
 [![PyTorch](https://img.shields.io/badge/PyTorch-Adversarial-red.svg)]()
 [![Next.js](https://img.shields.io/badge/Next.js-UI-black.svg)]()
-[![License](https://img.shields.io/badge/License-MIT-green.svg)]()
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 </div>
 
@@ -113,3 +113,6 @@ Navigate to `http://localhost:3000` to trigger on-the-fly FGSM/PGD attacks and s
 ## 👨‍💻 Authors & Affiliations
 
 - **Desai Prathmesh Prakash**
+
+## 📄 License
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
