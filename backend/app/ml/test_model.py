@@ -1,12 +1,12 @@
 import torch
 from app.ml.evaluate import evaluate
 from app.ml.data import get_test_loader
-from app.ml.model import SimpleCNN
+from app.ml.model import TabularMLP
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load model
-model = SimpleCNN().to(DEVICE)
+model = TabularMLP().to(DEVICE)
 model.load_state_dict(torch.load("app/ml/model.pth", map_location=DEVICE))
 model.eval()
 

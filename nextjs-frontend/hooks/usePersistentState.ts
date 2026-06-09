@@ -1,27 +1,27 @@
-// hooks/usePersistentState.ts
 "use client";
+import { useState, useEffect } from "react";
 
-import { useState, useEffect, Dispatch, SetStateAction } from "react";
+export default function usePersistentState<T>(key: string, initialValue: T): [T, (val: T | ((prev: T) => T)) => void] {
+  const [state, setState] = useState<T>(initialValue);
 
-export default function usePersistentState<T>(
-  key: string,
-  initialValue: T
-): [T, Dispatch<SetStateAction<T>>] {
-  const [state, setState] = useState<T>(() => {
-    // Check for window to avoid SSR issues
-    if (typeof window === "undefined") return initialValue;
-    
-    const saved = localStorage.getItem(key);
-    try {
-      return saved ? JSON.parse(saved) : initialValue;
-    } catch {
-      return initialValue;
-    }
-  });
-
+  // Load from localStorage only on the client after initial hydration
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    try {
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        setState(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.warn("Error reading localStorage", e);
+    }
+  }, [key]);
+
+  // Save to localStorage when state changes
+  useEffect(() => {
+    try {
       localStorage.setItem(key, JSON.stringify(state));
+    } catch (e) {
+      console.warn("Error setting localStorage", e);
     }
   }, [key, state]);
 

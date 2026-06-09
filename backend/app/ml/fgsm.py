@@ -16,15 +16,15 @@ def fgsm_attack(model, image, label, epsilon):
 
     data_grad = image.grad.detach()
 
-    # ✅ Scale epsilon for normalized data
-    epsilon = epsilon / 0.3081
+    # Basic Epsilon step
+    # (No scaling needed for standard Tabular Min-Max)
 
     # FGSM
     perturbed = image + epsilon * data_grad.sign()
 
-    # ✅ Correct clamp for normalized MNIST
-    min_val = (0 - 0.1307) / 0.3081
-    max_val = (1 - 0.1307) / 0.3081
+    # ✅ Clamp for Tabular Min-Max
+    min_val = 0.0
+    max_val = 1.0
 
     perturbed = torch.clamp(perturbed, min_val, max_val)
 

@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 import torch
 
-from app.ml.model import SimpleCNN
+from app.ml.model import TabularMLP
 from app.ml.data import get_train_loader, get_test_loader
 from app.ml.train import adversarial_train
 from app.ml.evaluate import evaluate
@@ -32,7 +32,7 @@ class EpsilonRequest(BaseModel):
 # =====================================================
 print("Loading base model...")
 
-base_model = SimpleCNN().to(DEVICE)
+base_model = TabularMLP().to(DEVICE)
 
 base_model.load_state_dict(
     torch.load(
@@ -89,7 +89,7 @@ def adversarial_training_defence(req: EpsilonRequest):
     # -------------------------
     # CLONE MODEL
     # -------------------------
-    robust_model = SimpleCNN().to(DEVICE)
+    robust_model = TabularMLP().to(DEVICE)
 
     robust_model.load_state_dict(
         base_model.state_dict()
@@ -102,7 +102,7 @@ def adversarial_training_defence(req: EpsilonRequest):
         model=robust_model,
         train_loader=train_loader,
         epsilon=epsilon,
-        epochs=3
+        epochs=50
     )
 
     robust_model.eval()

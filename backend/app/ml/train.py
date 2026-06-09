@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torch.optim import Adam
 import random
 
-from app.ml.model import SimpleCNN
+from app.ml.model import TabularMLP
 from app.ml.data import get_train_loader
 from app.ml.fgsm import fgsm_attack
 
@@ -15,8 +15,8 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # =====================================================
 # ✅ CLEAN TRAINING
 # =====================================================
-def train_model(epochs=5, lr=1e-3, save_path="app/ml/model.pth"):
-    model = SimpleCNN().to(DEVICE)
+def train_model(epochs=50, lr=1e-3, save_path="app/ml/model.pth"):
+    model = TabularMLP().to(DEVICE)
     train_loader = get_train_loader()
 
     optimizer = Adam(model.parameters(), lr=lr)
@@ -28,7 +28,7 @@ def train_model(epochs=5, lr=1e-3, save_path="app/ml/model.pth"):
         total_loss = 0
 
         for data, target in train_loader:
-            data, target = data.to(DEVICE), target.to(DEVICE)
+            data, target = data.to(DEVICE), target.long().view(-1).to(DEVICE)
 
             optimizer.zero_grad()
             output = model(data)
@@ -51,7 +51,7 @@ def train_model(epochs=5, lr=1e-3, save_path="app/ml/model.pth"):
 # =====================================================
 # ✅ ADVERSARIAL TRAINING (FAST + STABLE)
 # =====================================================
-def adversarial_train(model, train_loader, epsilon=0.1, epochs=2, lr=1e-4):
+def adversarial_train(model, train_loader, epsilon=0.1, epochs=50, lr=1e-3):
 
     model = model.to(DEVICE)
     optimizer = Adam(model.parameters(), lr=lr)
@@ -62,7 +62,7 @@ def adversarial_train(model, train_loader, epsilon=0.1, epochs=2, lr=1e-4):
         total_loss_epoch = 0
 
         for data, target in train_loader:
-            data, target = data.to(DEVICE), target.to(DEVICE)
+            data, target = data.to(DEVICE), target.long().view(-1).to(DEVICE)
 
             # CLEAN PASS
             output = model(data)
@@ -104,21 +104,21 @@ def train_multiple_models(num_models=3):
         torch.manual_seed(42 + i)
         random.seed(42 + i)
 
-        model = SimpleCNN().to(DEVICE)
+        model = TabularMLP().to(DEVICE)
         train_loader = get_train_loader()
 
-        # ✅ Different LR per model
-        lr_list = [1e-3, 5e-4, 1e-4]
+        # ✅ Strict LR = 0.001
+        lr_list = [1e-3, 1e-3, 1e-3]
         optimizer = Adam(model.parameters(), lr=lr_list[i % len(lr_list)])
 
         model.train()
 
-        for epoch in range(3):
+        for epoch in range(50):
             total_loss = 0
 
             for data, target in train_loader:
 
-                data, target = data.to(DEVICE), target.to(DEVICE)
+                data, target = data.to(DEVICE), target.long().view(-1).to(DEVICE)
 
                 # -----------------------------
                 # ✅ SAFE NOISE (CLAMPED)
@@ -126,9 +126,9 @@ def train_multiple_models(num_models=3):
                 noise = torch.randn_like(data) * (0.02 * (i + 1))
                 data_noisy = data + noise
 
-                # Clamp to normalized MNIST range
-                min_val = (0 - 0.1307) / 0.3081
-                max_val = (1 - 0.1307) / 0.3081
+                # Clamp to normalized Tabular Min-Max range
+                min_val = 0.0
+                max_val = 1.0
                 data_noisy = torch.clamp(data_noisy, min_val, max_val)
 
                 optimizer.zero_grad()
@@ -159,8 +159,7 @@ def train_multiple_models(num_models=3):
 # ENTRY POINT
 # =====================================================
 if __name__ == "__main__":
-    # 🔥 Use this for ensemble (IMPORTANT)
     train_multiple_models(num_models=3)
 
-    # Optional single model
-    # train_model()
+    # Train main baseline model
+    train_model()

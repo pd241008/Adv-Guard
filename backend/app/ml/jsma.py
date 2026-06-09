@@ -50,9 +50,9 @@ def jsma_attack(model, image, label, theta=0.4, max_iter=80):
         for i in topk:
             perturbed_flat[i] += theta
 
-        # ✅ Clamp in normalized space
-        min_val = (0 - 0.1307) / 0.3081
-        max_val = (1 - 0.1307) / 0.3081
+        # ✅ Clamp in normalized Tabular space
+        min_val = 0.0
+        max_val = 1.0
 
         perturbed_flat = torch.clamp(perturbed_flat, min_val, max_val)
 
