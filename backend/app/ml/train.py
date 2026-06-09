@@ -15,7 +15,7 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # =====================================================
 # ✅ CLEAN TRAINING
 # =====================================================
-def train_model(epochs=5, lr=1e-3, save_path="app/ml/model.pth"):
+def train_model(epochs=50, lr=1e-3, save_path="app/ml/model.pth"):
     model = TabularMLP().to(DEVICE)
     train_loader = get_train_loader()
 
@@ -51,7 +51,7 @@ def train_model(epochs=5, lr=1e-3, save_path="app/ml/model.pth"):
 # =====================================================
 # ✅ ADVERSARIAL TRAINING (FAST + STABLE)
 # =====================================================
-def adversarial_train(model, train_loader, epsilon=0.1, epochs=2, lr=1e-4):
+def adversarial_train(model, train_loader, epsilon=0.1, epochs=50, lr=1e-3):
 
     model = model.to(DEVICE)
     optimizer = Adam(model.parameters(), lr=lr)
@@ -107,13 +107,13 @@ def train_multiple_models(num_models=3):
         model = TabularMLP().to(DEVICE)
         train_loader = get_train_loader()
 
-        # ✅ Different LR per model
-        lr_list = [1e-3, 5e-4, 1e-4]
+        # ✅ Strict LR = 0.001
+        lr_list = [1e-3, 1e-3, 1e-3]
         optimizer = Adam(model.parameters(), lr=lr_list[i % len(lr_list)])
 
         model.train()
 
-        for epoch in range(3):
+        for epoch in range(50):
             total_loss = 0
 
             for data, target in train_loader:
@@ -159,8 +159,7 @@ def train_multiple_models(num_models=3):
 # ENTRY POINT
 # =====================================================
 if __name__ == "__main__":
-    # 🔥 Use this for ensemble (IMPORTANT)
     train_multiple_models(num_models=3)
 
-    # Optional single model
-    # train_model()
+    # Train main baseline model
+    train_model()

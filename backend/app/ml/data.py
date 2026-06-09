@@ -21,11 +21,14 @@ def load_tabular_data(csv_path, samples=1000):
     synthetic tabular dataset conforming to the continuous and DACM boundaries.
     """
     if os.path.exists(csv_path):
-        # In a real scenario, pd.read_csv logic goes here.
-        # Example safe scaling:
-        # df[CONTINUOUS_COLS] = (df[CONTINUOUS_COLS] - df[CONTINUOUS_COLS].min()) / (df[CONTINUOUS_COLS].max() - df[CONTINUOUS_COLS].min() + 1e-8)
-        pass
+        import numpy as np
+        data = np.loadtxt(csv_path, delimiter=',')
+        x_data = torch.tensor(data[:, :-1], dtype=torch.float32)
+        y_data = torch.tensor(data[:, -1], dtype=torch.long)
+        print(f"Label distribution for {csv_path}:", torch.bincount(y_data.long()))
+        return TensorDataset(x_data, y_data)
         
+    print(f"WARNING: {csv_path} not found. Falling back to synthetic.")
     # Synthetic generator strictly conforming to Min-Max [0, 1] and One-Hot bounds
     x_data = torch.rand(samples, FEATURE_DIM)
     

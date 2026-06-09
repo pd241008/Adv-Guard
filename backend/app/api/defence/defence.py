@@ -102,7 +102,7 @@ def adversarial_training_defence(req: EpsilonRequest):
         model=robust_model,
         train_loader=train_loader,
         epsilon=epsilon,
-        epochs=3
+        epochs=50
     )
 
     robust_model.eval()
