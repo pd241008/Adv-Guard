@@ -1,7 +1,7 @@
 import torch
 from app.ml.pgd import pgd_attack
 
-def evaluate_pgd(model, data_loader, epsilon=0.1, alpha=0.01, steps=40, max_samples=100):
+def evaluate_pgd(model, data_loader, epsilon=0.1, alpha=0.01, steps=40, max_samples=100, continuous_cols=None, categorical_groups=None):
     clean_correct = 0
     adv_correct = 0
     total = 0
@@ -18,7 +18,7 @@ def evaluate_pgd(model, data_loader, epsilon=0.1, alpha=0.01, steps=40, max_samp
         
         clean_correct += (init_pred == target).sum().item()
         
-        adv_data = pgd_attack(model, data, target, epsilon, alpha, steps)
+        adv_data = pgd_attack(model, data, target, epsilon, alpha, steps, continuous_cols, categorical_groups)
         adv_output = model(adv_data)
         adv_pred = adv_output.argmax(dim=1)
         

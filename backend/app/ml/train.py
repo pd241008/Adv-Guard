@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torch.optim import Adam
 import random
 
-from app.ml.model import SimpleCNN
+from app.ml.model import TabularMLP
 from app.ml.data import get_train_loader
 from app.ml.fgsm import fgsm_attack
 
@@ -16,7 +16,7 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # ✅ CLEAN TRAINING
 # =====================================================
 def train_model(epochs=5, lr=1e-3, save_path="app/ml/model.pth"):
-    model = SimpleCNN().to(DEVICE)
+    model = TabularMLP().to(DEVICE)
     train_loader = get_train_loader()
 
     optimizer = Adam(model.parameters(), lr=lr)
@@ -104,7 +104,7 @@ def train_multiple_models(num_models=3):
         torch.manual_seed(42 + i)
         random.seed(42 + i)
 
-        model = SimpleCNN().to(DEVICE)
+        model = TabularMLP().to(DEVICE)
         train_loader = get_train_loader()
 
         # ✅ Different LR per model

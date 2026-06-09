@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from app.ml.model import SimpleCNN
+from app.ml.model import TabularMLP
 
 
 class EnsembleModel(nn.Module):
@@ -20,7 +20,7 @@ class EnsembleModel(nn.Module):
             path = f"app/ml/model_{i}.pth"
 
             try:
-                model = SimpleCNN().to(self.device)
+                model = TabularMLP().to(self.device)
 
                 model.load_state_dict(
                     torch.load(path, map_location=self.device)

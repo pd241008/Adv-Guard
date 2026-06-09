@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 import torch
 from pydantic import BaseModel
-from app.ml.model import SimpleCNN
+from app.ml.model import TabularMLP
 from app.ml.data import get_test_loader
 from app.ml.fgsm_eval import evaluate_fgsm
 from app.ml.jsma_eval import evaluate_jsma
@@ -19,7 +19,7 @@ attack_router = APIRouter()
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # ✅ Load trained model
-model = SimpleCNN().to(DEVICE)
+model = TabularMLP().to(DEVICE)
 model.load_state_dict(torch.load("app/ml/model.pth", map_location=DEVICE))
 model.eval()
 
@@ -108,6 +108,7 @@ def jsma_multi_sample(theta: float = 0.4):
 # PGD ATTACK
 # -----------------------------
 from app.ml.pgd_eval import evaluate_pgd
+from app.ml.data import CONTINUOUS_COLS, CATEGORICAL_GROUPS
 
 @attack_router.post("/pgd")
 def pgd_multi_sample(req: PGDRequest):
@@ -117,7 +118,9 @@ def pgd_multi_sample(req: PGDRequest):
         epsilon=req.epsilon,
         alpha=req.alpha,
         steps=req.steps,
-        max_samples=100
+        max_samples=100,
+        continuous_cols=CONTINUOUS_COLS,
+        categorical_groups=CATEGORICAL_GROUPS
     )
 
     clean_acc = clean_correct / total
