@@ -3,3 +3,4 @@ uvicorn
 numpy
 torch
 torchvision
+prometheus_client
