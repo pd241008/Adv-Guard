@@ -14,6 +14,7 @@ class EnsembleModel(nn.Module):
         )
 
         self.models = nn.ModuleList()
+        self.num_models = num_models
 
         for i in range(num_models):
 

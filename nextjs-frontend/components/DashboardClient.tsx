@@ -21,6 +21,7 @@ export default function Dashboard() {
   const [defence, setDefence] = usePersistentState("defence", null);
   const [logs, setLogs] = usePersistentState<any[]>("logs", []);
 
+  const [attackType, setAttackType] = useState("fgsm");
   const [epsilonGlobal, setEpsilonGlobal] = usePersistentState("epsilon", 0.1);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState("Initializing...");
@@ -63,6 +64,8 @@ export default function Dashboard() {
         {/* MAIN CONTROLS: ATTACK & DEFENCE */}
         <div className="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(450px,1fr))] gap-6">
           <AttackPanel
+            attackType={attackType}
+            setAttackType={setAttackType}
             epsilonGlobal={epsilonGlobal}
             setEpsilonGlobal={setEpsilonGlobal}
             setIsLoading={setIsLoading}
@@ -110,9 +113,11 @@ export default function Dashboard() {
               defence={defence}
             />
 
-            {fgsm && defence && (
+            {(fgsm || pgd) && defence && (
               <SimpleChart
                 fgsm={fgsm}
+                pgd={pgd}
+                attackType={attackType}
                 defence={defence}
               />
             )}

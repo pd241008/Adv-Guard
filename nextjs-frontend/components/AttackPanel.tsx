@@ -10,9 +10,10 @@ export default function AttackPanel({
   epsilonGlobal,
   setIsLoading,
   setLoadingMsg,
+  attackType,
+  setAttackType,
 }: any) {
 
-  const [attackType, setAttackType] = useState("fgsm");
   const [alpha, setAlpha] = useState(0.01);
   const [steps, setSteps] = useState(40);
 

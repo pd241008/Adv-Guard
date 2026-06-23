@@ -2,11 +2,12 @@
 // SimpleChart.jsx
 import React, { useEffect, useRef } from "react";
 
-export default function SimpleChart({ fgsm, defence }: any) {
+export default function SimpleChart({ fgsm, pgd, attackType, defence }: any) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    if (!fgsm || !defence) return;
+    const activeAttack = attackType === "pgd" ? pgd : fgsm;
+    if (!activeAttack || !defence) return;
 
     const canvas: HTMLCanvasElement | null = canvasRef.current; if (!canvas) return;
     const ctx = canvas.getContext("2d"); if (!ctx) return;
@@ -14,8 +15,8 @@ export default function SimpleChart({ fgsm, defence }: any) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const values = [
-      fgsm.original_accuracy,
-      fgsm.adversarial_accuracy,
+      activeAttack.original_accuracy,
+      activeAttack.adversarial_accuracy,
       defence.robust_accuracy,
     ];
 
@@ -38,7 +39,7 @@ export default function SimpleChart({ fgsm, defence }: any) {
       ctx.fillText(labels[i], x, 290);
       ctx.fillText(val.toFixed(2), x + 20, y - 10);
     });
-  }, [fgsm, defence]);
+  }, [fgsm, pgd, attackType, defence]);
 
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-md flex flex-col items-center">
