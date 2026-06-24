@@ -20,6 +20,16 @@
 
 ---
 
+## 📄 Research
+
+| Paper | Venue | Status |
+| :--- | :--- | :--- |
+| **Proactive Adversarial Defense Framework Integrating Lifecycle Robustness in Machine Learning Models for Cybersecurity** | IEEE CSR 2026 — Lisbon, Portugal · August 3–5 | ✅ Accepted |
+
+*Introduces DACM (Discrete Adversarial Constraint Mapping) — maps continuous adversarial gradients onto structurally valid discrete categorical boundaries, enabling real-world executable payloads against tabular network telemetry. Validated on NSL-KDD and CICIDS2017; adversarially trained model sustains 93.00% robust accuracy at ε = 0.15. Implementation: AdvGuard.*
+
+---
+
 ## ✨ Key Innovations
 
 - 🎯 **Multi-Faceted Threat Simulation Backend**  
