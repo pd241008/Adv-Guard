@@ -8,6 +8,7 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-Adversarial-red.svg)]()
 [![Next.js](https://img.shields.io/badge/Next.js-UI-black.svg)]()
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![DOI](https://zenodo.org/badge/1127553839.svg)](https://doi.org/10.5281/zenodo.22327124)
 
 </div>
 
