@@ -27,6 +27,18 @@
 | :--- | :--- | :--- |
 | **Proactive Adversarial Defense Framework Integrating Lifecycle Robustness in Machine Learning Models for Cybersecurity** | IEEE CSR 2026 — Lisbon, Portugal · August 3–5 | ✅ Presented|
 
+> [!WARNING]
+> **Evaluation-status caveat (2026-09-06).** The **93.00% robust accuracy at
+> ε=0.15** figure cited below reflects the retired one-shot gradient-snapped
+> evaluation convention. It is **not** a valid categorical robustness measure:
+> the categorical snap is inactive under the published defaults, so the figure
+> measures a K=0 continuous-only attack with learned categorical gradients
+> masked by non-differentiable `argmax` snapping
+> (`backend/app/ml/attacks/pgd.py`). The canonical protocol is now **exhaustive
+> mixed-norm enumeration** (ADR-001 in `docs/01-documentation/adrs/`), and the
+> original paper's 29.10% NSL-KDD figure was retracted. Do not cite either
+> number as a robustness claim without first running the canonical evaluator.
+
 *Introduces DACM (Discrete Adversarial Constraint Mapping) — maps continuous adversarial gradients onto structurally valid discrete categorical boundaries, enabling real-world executable payloads against tabular network telemetry. Validated on NSL-KDD and CICIDS2017; adversarially trained model sustains 93.00% robust accuracy at ε = 0.15. Implementation: AdvGuard.*
 
 ---
@@ -92,6 +104,27 @@ When exposed to an aggressive perturbation limit of **ϵ = 0.15** via FGSM:
 > [!TIP]
 > **AdvGuard Hardening (Success!)**  
 > The architecture subjected to integrated adversarial training sustained a robust accuracy of **93.00%**, effectively crippling evasion success rates without diminishing baseline predictive capabilities.
+
+---
+
+## ⚖️ Canonical Evaluation: Pros and Cons
+
+> Standard for all robustness claims. Full decision in
+> `docs/01-documentation/adrs/001-canonical-exhaustive-evaluation.md` (ADR-001);
+> historical evidence in `docs/02-postmortems/`.
+
+**Pros**
+- Eliminates invalid-state artifacts (no fractional one-hots, no gradient-masking `argmax`).
+- Guarantees coverage of the discrete categorical state space within budget $K$.
+- Faithful reproduction yields **40.36%** robust accuracy for the hardened NSL-KDD model (vs. the retracted 29.10%).
+
+**Cons**
+- Runtime scales combinatorially with $K$ and the number of categorical groups (UNSW-NB15, $K=2$: 667 states per sample).
+- Memory bandwidth is the bottleneck; GPU parallelism is essential for large datasets.
+
+**Neutral**
+- Inner optimization remains PGD-based (no global certificate).
+- Random-start PGD adds run-to-run variance; pre-registered tolerances live in `verification/compare_exh_fresh.py`.
 
 ---
 
